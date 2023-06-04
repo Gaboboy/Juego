@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tres en raya</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      gap: 2px;
+      width: 300px;
+      height: 300px;
+    }
+    
+    .cell {
+      background-color: #f2f2f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      cursor: pointer;
+    }
+    
+    .winner {
+      border: 2px solid black;
+    }
+
+    .message {
+      font-size: 48px;
+      font-weight: bold;
+      text-align: center;
+      color: #ff0000;
+      margin-top: 20px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="board">
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+    <div class="cell"></div>
+  </div>
+  <audio id="music" src="ruta_del_archivo_de_audio.mp3" volume="1" autoplay loop></audio>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const board = document.querySelector(".board");
+      const cells = board.querySelectorAll(".cell");
+      let currentPlayer = "X";
+      let gameActive = true;
+      
+      // Agregar eventos de clic a las celdas
+      cells.forEach(function(cell) {
+        cell.addEventListener("click", cellClicked);
+      });
+      
+      function cellClicked() {
+        if (!gameActive) return;
+        
+        if (this.textContent === "") {
+          this.textContent = currentPlayer;
+          this.classList.add(currentPlayer);
+          checkWin();
+          togglePlayer();
+        }
+      }
+      
+      function togglePlayer() {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+      }
+      
+      function checkWin() {
+        const winningCombinations = [
+          [0, 1, 2],
+          [3, 4, 5],
+          [6, 7, 8],
+          [0, 3, 6],
+          [1, 4, 7],
+          [2, 5, 8],
+          [0, 4, 8],
+          [2, 4, 6]
+        ];
+        
+        for (let combination of winningCombinations) {
+          const [a, b, c] = combination;
+          if (
+            cells[a].textContent !== "" &&
+            cells[a].textContent === cells[b].textContent &&
+            cells[a].textContent === cells[c].textContent
+          ) {
+            cells[a].classList.add("winner");
+            cells[b].classList.add("winner");
+            cells[c].classList.add("winner");
+            gameActive = false;
+            showWinner(currentPlayer);
+            break;
+          }
+        }
+      }
+      
+      function showWinner(player) {
+        const message = document.createElement("div");
+        message.textContent = "¡Felicidades, jugador " + player + "!";
+        message.classList.add("message");
+        board.appendChild(message);
+      }
+    });
+  </script>
+</body>
+</html>
